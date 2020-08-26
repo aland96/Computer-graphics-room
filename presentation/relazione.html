@@ -1,0 +1,261 @@
+<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.01 transitional//en" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title> Alan Dalmonte - Relazione Progetto Fondamenti di Computer Graphics </title>
+</head>
+<body bgcolor="#6495ED">
+	<a name="Tornasu"></a>
+	<div align="center"><b><font size="+2">Fondamenti di Computer Graphics<br>
+	</font> <font size="+1">Relazione del Progetto di Alan Dalmonte <br>
+	Sviluppo di una "3D Web App" utilizzando WebGL<br>
+	</font></b><br><br><img src="images/copertina.jpg" width=800 height=400 align="center" alt="immagine copertina"></div>
+	<br>
+	<!--************************************************************************************************* -->
+	<!--***************************************Struttura Progetto************************************************* -->
+	<!--************************************************************************************************* -->
+	<hr><h2> <u><b><a name="Struttura"></a>Struttura Progetto</b></u></h2>
+	<br><img src="images/files.jpg" width="400" height="350" align="right">
+	Il progetto si occupa di realizzare una stanza 3D interattiva utilizzando WebGL, HTML5, CSS, Javascript e ES SL. La stanza è strutturata da una stanza con all'interno diverse mesh e una fonte di luce che crea gli effetti di illuminazione.
+	Per far partire il progetto è necessario un piccolo server Web locale che supporti la applicazione, in maniera analoga agli esercizi visti a lezione.
+	L'applicazione è composta dai seguenti file:
+	<br>
+	<ol>
+		<li> index.html: file HTML base dell'applicazione, realizzato autonomamente
+		<li> m4.js: libreria per operazioni e calcoli con vettori e matrici, presa dalle lezioni in classe
+		<li> webgl-lessons-ui.js: libreria per gestione interfaccia utente semplificata, presa dalle lezioni in classe
+		<li> objLoader.js: codice per caricamento delle informazioni richieste per le mesh partendo da un file OBJ Wavefront, realizzato autonomamente
+		<li> utils.js: codice javascript di supporto per caricamento di diversi tipi di file e funzioni ausiliarie, realizzato autonomamente
+		<li> Models.js: codice javascript che si occupa di gestire con programmazione ad oggetti le mesh e la camera, realizzato autonomamente
+		<li> stanza.js: codice javascript principale che si occupa della gestione e visualizzazione della scena, realizzato autonomamente
+	</ol>
+	<br>
+	Il progetto presenta anche una serie di cartelle che contengono tutte le varie risorse impiegate per la realizzazione dell'applicazione:
+	<br>
+	<ol>
+		<li> audios: cartella contenente i file audio 
+		<li> images: cartella contenente tutti le immagini presenti nell'applicazione, comprese le texture per gli oggetti mesh
+		<li> objFiles: cartella contenente i file Obj Wavefront che rappresentano gli oggetti mesh presenti nella scena
+		<li> shaders: cartella contenente i file ES SL che descrivono i vari shader utilizzabili nella applicazione
+	</ol>
+	<br>
+	<!--************************************************************************************************* -->
+	<!--***************************************Descrizione Applicazione************************************************* -->
+	<!--************************************************************************************************* -->
+	<hr><h2> <u><b><a name="Descrizione"></a>Descrizione Applicazione</b></u></h2>
+	<br>
+	La scena presenta una serie di oggetti mesh che vengono illuminati da una fonte di luce.
+	<br><a name="Oggetti Mesh"></a>Gli oggeti Mesh presenti sono:<br>
+	<ol>
+		<li> Monkey Mesh: mesh base di blender che rapprensenta la faccia di una scimmia
+		<li> Sofa Mesh: mesh che rapprensenta un divano
+		<li> Walls Mesh: mesh che rapprensenta le pareti della stanza dentro la quale sono disposti gli altri oggetti
+		<li> Table Mesh: mesh che rapprensenta un tavolo
+		<li> Light Bulb Mesh: mesh che rapprensenta una sfera, questa viene utilizzata come se fosse la fonte di luce, simile ad un lampadario
+		<li> T-Rex Mesh: mesh che rapprensenta un tirannosauro, mesh molto complicata e dettagliata scaricata da https://www.cgtrader.com/
+	</ol>
+	<h3> <u><b><a name="Texture"></a>Texture</b></u></h3><br>
+	Due di queste mesh, in particolare Monkey Mesh e Table Mesh, presentano l'applicazione di texture. Per l'implementazione delle texture ho seguito gli esempi dei codici visti a lezione. Ho creato delle texture utilizzando WebGL
+	e le sue funzioni, in particolare "gl.createTexture()" e "gl.texImage2D()", e se possibile alle immagini viene applicata la tecnica del "mipmap" oppure vengono settati dei parametri standard per la sua gestione. L'ultimo passo
+	è l'utilizzo della texture per il disegno tramite gli shader adatti.
+	<br>Per la Monkey Mesh è stata utilizzata una texture trovata online per rendere più realistica la scimmia, dove vengono applicate diverse colorazioni	alle aree principali della faccia come occhi e bocca.
+	<br>Per la Table Mesh invece ho combinato manualmente due foto, una foto personale come richiesto dalla consegna, e una texture del legno. In questo modo tramite blender sono stato
+	in grado di inserire la mia foto nella parte superiore del tavolo, quindi la più visibile, e invece mantenere una texture del legno per la restante parte della mesh, come per dare l'idea di una tovaglia sopra al tavolo.
+	<br>Per entrambe le mesh ho sfruttato blender per decidere il mapping della texture sull'oggetto e di conseguenza salvare le coordinate texture nel file Obj Wavefront. Grazie al file objLoader ho potuto successivamente caricare
+	le coordinate nel codice javascript e utilizzarle per il rendering.
+	<br>	
+	<br>
+	<table border="0" align="center" cellspacing="1" cellpadding="1">
+		<tr>
+			<td><img src="images/tavoloTexture.jpg" width=520 height=400 align="center"></td>
+			<td><img src="images/monkeyTexture.jpg" width=520 height=400 align="center"></td>
+		</tr>
+	</table><br>
+	<br>
+	<h3> <u><b><a name="Animazioni"></a>Animazioni</b></u></h3><br>
+	Nella scena sono presenti due oggetti mesh che sono soggetti a due animazioni autonome indipendenti.
+	<br>Il primo oggetto è la Monkey Mesh che è soggetta ad una rotazione rispetto al suo asse Y. Questa è stata realizzata tramite la libreria "m4.js" e in particolare la funzione "m4.yRotate(m, angleInRadians, dst)". Prima di ogni render
+	viene chiamata la funzione "update()" dove appunto viene modificata la worldMatrix della Monkey Mesh facendola ruotare. Per questa animazione è stato aggiunto un valore di controllo sulla velocità di rotazione che potrà essere gestito entro un certo intervallo
+	tramite le interfacce utente.
+	<br>La seconda animazione prende come soggetto la T-Rex Mesh. Anche in questo caso è gestita nella funzione "update()", ma questa si occupa di traslare l'oggetto come in un ciclo infinito dall'alto al basso e viceversa.
+	Per realizzare questa animazione ho previsto una variabile di appoggio che rappresenta la direzione del movimento e dei confini di altezza per la posizione della T-Rex Mesh oltre i quali invertire il movimento.
+	Anche in questo caso è stata utilizzata la libreria	"m4.js" e in particolare la funzione "m4.translate(m, tx, ty, tz, dst)".
+	<br>
+	<br>
+	<table border="0" align="center" cellspacing="1" cellpadding="1">
+		<tr>
+			<td><img src="images/monkey.gif" width=520 height=400 align="center"></td>
+			<td><img src="images/t-rex.gif" width=520 height=400 align="center"></td>
+		</tr>
+	</table><br>
+	<h3> <u><b><a name="Illuminazione"></a>Illuminazione</b></u></h3><br>
+	Per quanto riguarda l'illuminazione ho realizzato un modello di Phong semplificato. Come nel modello di Phong ho interpolato le normali e applicato il modello di illuminazione in ogni punto degli oggetti, quindi all'interno del
+	fragment shader. Questo permette un risultato molto buono a discapito di un maggiore costo rispetto ad altri modelli di illuminazione più semplici. Nel mio codice non sono presenti variabili che rappresentano le proprietà
+	della luce e le proprietà dei materiali; per semplicità non sono state inserite e al loro posto sono presenti delle costanti scelte manualmente in base al risultato ricercato.
+	<br>Gli shaders sono divisi in due gruppi: il primo per gli oggetti che possiedono una texture e un secondo per quelli che possiedono solamente un colore della mesh. Fra questi le uniche differenze risultano essere la scelta del
+	colore e l'utilizzo di diverse costanti per i valori della luce per dare un risultato piacevole e omogeneo.
+	<br>La posizione della luce risulta essere una variabile importante all'interno del progetto. Essa è impostata manualmente e passata a tutti gli shader per effettuare i vari calcoli. Inoltre è impiegata per la traslazione della
+	Light Bulb Mesh; infatti questa mesh vuole rappresentare la fonte di luce, come un lampadario, e quindi deve essere posizionata nello stesso punto che viene passato agli shader per fare le operazioni.
+	<br>Una aggiunta a livello di illuminazione è la possibilità, tramite una interfaccia utente, di abilitare il calcolo e la rappresentazione delle ombre nella scena. Di conseguenza tutti gli shader quì sopra citati sono stati duplicati per poter
+	gestire anche questi dettagli aggiuntivi. Inoltre sono presenti due shader che si occupano delle generazione della mappa delle ombre.
+	Nel sottoparagrafo <a href="relazione.html#Ombre" target="contenuto">Ombre</a> analizzo in maniera più dettagliata come ho realizzato questo effetto.
+	<br>
+	<br>
+	<!--************************************************************************************************* -->
+	<!--***************************************Interattività************************************************* -->
+	<!--************************************************************************************************* -->
+	<br>
+	<hr><h2> <u><b><a name="Interazione"></a>Interattività</b></u></h2>
+	<br>
+	L'applicazione gestisce diverse interazioni rispondendo a degli input specifici dell'utente sia tramite l'utilizzo della tastiera, del mouse e di un possibile touch screen da dispositivo mobile. All'interno della scena è possibile muovere la propria visuale in tutte le direzioni:
+	avanti, indietro, destra, sinistra, verso l'alto e verso il basso. Inoltre è anche possibile ruotare la camera verso destra e sinistra e effettuare alcune interazioni. Sopra la canvas che presenta la scena sono presenti
+	un pannello di controllo e delle schermate di interazione. 
+	<h3> <u><b><a name="Menu"></a>Interfaccia utente</b></u></h3>
+	<img src="images/menu.jpg" width="200" height="200" align="right">
+	<br>
+	E' stata realizzata una interfaccia molto semplice dove è presente una guida per i comandi di movimento dell'utente e alcune possibili interazioni con la scena. Questo menù è stato realizzato tramite HTML5 e Javascript. Si è impiegato un tag HTML
+	"div" all'interno del quale sono state inserite le label e le immagini per rappresentare le istruzioni per gli spostamenti. Sucessivamente in javascript tramite l'utilizzo della libreria "webgl-lessons-ui.js" ho aggiunto altri tre elementi:
+	uno slider, che permette di modificare la velocità di rotazione della Monkey Mesh; una checkbox, che permette la attivazione e disattivazione dell'effetto ombre nella scena; e un'altra checkbox, che permette l'aggiunta e eliminazione
+	della T-Rex Mesh che inizialmente non risulta essere presente. L'interazione con questi elementi è gestita tramite javascript seguendo gli esempi visti a lezione.
+	<br>
+	<h3> <u><b><a name="Touch"></a>Gestione touch screen</b></u></h3><br>
+	Per questa funzionalità è stata implementata una ruota di movimento e due tasti addizionali che semplificano la fruibilità delle interazioni anche da tablet e smartphone, dove le interazioni da tastiera sono molto scomode.
+	L'idea è quella di simulare varie applicazioni e giochi per	mobile dove i movimenti e i comandi sono realizzati in maniera simile, cercando quindi di adattarsi ad uno standard conosciuto in modo che l'utente abbia da subito un'idea su come approcciarsi all'applicazione.
+	<br>Tutto ciò è realizzato tramite l'utilizzo di una ulteriore canvas	gestita con un contesto 2D e che presenta le immagini sottostanti. Vengono visualizzate due immagini ".png" che permettono la visione della stanza nelle aree non rilevanti e servono per dare l'idea all'utente di quale interazione andrà a fare
+	al momento della pressione. Tutte le interazioni possono essere effettuate sia tramite click del mouse che pressione del touch screen; in particolare la ruota di movimento permette di muoversi in 4 direzioni: avanti, indietro,destra e sinistra.
+	Mentre le due frecce invece si occupano del movimento in alto e in basso della camera. La gestione è stata effettuata tramite gli eventi della canvas, sia per gli eventi del mouse che per gli eventi per il tocco dello schermo, come "touchstart" e "touchend".
+	Per amministrare i diversi comandi ho trasformato le coordinate degli eventi in coordinate standard della canvas specifica e selezionato tramite intervalli quale area e quale movimento sia quello scelto.
+	Questa tecnica permette il corretto funzionamento anche nel caso le dimensioni della pagina vengano alterate.
+	<br>
+	<br>
+	<table border="0" align="center" cellspacing="1" cellpadding="1">
+		<tr>
+			<td><img src="images/ruota_mov.png" width=150 height=150 align="center"></td>
+			<td><img src="images/up_down_mov.png" width=150 height=150 align="center"></td>
+		</tr>
+	</table><br>
+	<br>
+	<!--************************************************************************************************* -->
+	<!--***************************************Struttura Codice************************************************* -->
+	<!--************************************************************************************************* -->
+	<hr><h2> <u><b><a name="Codice"></a>Struttura Codice</b></u></h2>
+	<br>
+	Come già presentato sono state impiegate diverse librerie come supporto. Le librerie "webgl-lessons-ui.js" e "m4.js" sono state riprese dalle lezioni; è stata apportata solamente una singola modifica alla libreria "m4.js".
+	In quest'ultima ho aggiunto una singola funzione che risultava non essere presente e che era necessaria per le operazioni di gestione della mia camera. In particolare risulta essere la funzione "scaleAndAdd(a, b, scale, dst)"
+	che prende in input due vettori di 3 componenti e un valore scalare; dopo aver moltiplicato per il valore scalare il secondo dei due vettori li somma e ritorna il vettore risultante dall'operazione.
+	<br>
+	<h3> <u><b><a name="Loader"></a>File Loader OBJ</b></u></h3><br>
+	Per la gestione del caricamento delle mesh tramite un file Obj Wavefront ho deciso di sfruttare una classe ObjLoader che si occupa di ciò. Ho realizzato questa classe seguendo un tutorial online e successivamente integrandola 
+	autonomamente per renderla più congeniale al mio utilizzo. Nel codice viene richiamata la seguente funzione "ObjLoader.objToMesh(monkeyTxt)" passando come input il testo che deve rappresentare il contenuto di un file Obj wavefront.
+	Inizialmente verrà analizzato l'input alla ricerca del parametro "o" che indica la linea del file dove è presente il nome della mesh che viene successivamente salvato nell'oggetto restituito dalla funzione. Successivamente viene esaminato il resto del testo 
+	alla ricerca delle lettere chiave; in particolare si cercano le "v", per i dati sui vertici, le "vt", per i dati sulle texture, le "vn", per i dati sulle normali e le "f" per i dati sulle facce. In base alla chiave trovata vengono riempite 
+	delle strutture ad hoc per mantenere le varie informazioni ed infine restituirle quando l'analisi del testo è completa. L'oggetto ritornato dalla funzione objToMesh risulta essere composto da 5 proprietà: il nome della mesh,
+	gli indici delle facce, i dati dei vertici, i dati delle normali e i dati delle texture. I dati delle texture potrebbero non essere presenti e nel caso quel'ultima proprietà risulterà essere una lista vuota.
+	<br>
+	<h3> <u><b><a name="Model"></a>Oggetti Ausiliari</b></u></h3><br>
+	Sono state create due classi Model e Camera per semplificare la gestione degli oggetti mesh e della camera di scena.
+	La classe Model utilizzata nel modo seguente "monkeyMesh = new Model(gl, mesh.vertices, mesh.indices, mesh.normals, [0.0,0.0,0.0,0.0], mesh.textureCoord)" ha bisogno in input del contesto WebGL, delle informazioni di vertici,indici, normali e in maniera facoltativa del colore della mesh e delle coordinate texture.
+	Essa si occupa di creare i buffer per vertici, indici, normali e se disponibile anche per le texture, e assegnarli correttamente. Inoltre tiene traccia del colore della mesh, se disponibile, del numero di indici e della worldMatrix specifica di ogni mesh. In questo modo riesco 
+	a mantenere tutte le informazioni rispetto ad una singola mesh all'interno dello stesso oggetto, mantenendo il codice molto più snello e pulito.
+	<br>La classe Camera si occupa della gestione della camera e dell'implementazione di tutti i possibili movimenti e operazioni disponibili con essa. Ha bisogno  come input della posizione iniziale della camera, della posizione dell'obiettivo e del versore
+	"Up" e viene chiamata con "camera = new Camera(position,target,up)". Grazie a queste informazioni vengono calcolati i vettori delle tre direzioni "avanti","destra" e "sopra"; questi risultano essere tutti ortogonali fra loro e verranno normalizzati.
+	Questi vettori saranno la base per poter effettuare le varie operazioni di alto livello sulla camera; alla base di tutto ciò risultano sempre esserci calcoli con vettori e matrici effettuati tramite la libreria "m4.js".
+	Le funzioni proposte dalla classe Camera sono: rotateRight, moveForward, moveRight, moveUp; inoltre è presente una funzione privata per riallineare e normalizzare tutti i 3 vettori della camera a seguito delle varie modifiche
+	e una funzione "getViewMatrix()" che ritorna la viewMatrix aggiornata della camera dopo le possibili nuove operazioni effettuate. Questa classe nasconde le complicate operazioni matriciali e permette di vedere la camera
+	come un singolo oggetto sul quale effettuare i movimenti desiderati e ottenere la matrice risultante.
+	<br>Infine all'interno del file "Model.js" è presente una funzione che si occupa della creazione dei programmi shader. Essa prende in input in contesto WebGL e il testo del vertex e fragment shader; si occupa della creazione e
+	compilazione degli shader e controlla la buona riuscita di queste operazioni. Infine crea il programma collegando gli shader appena creati e lo ritorna in output, anche in questo caso verificando possibili errori.
+	<br>
+	<img src="images/Render.jpg" width="300" height="250" align="right">
+	<h3> <u><b><a name="Rendering"></a>Flusso di Rendering</b></u></h3>
+	<br>
+	Nella parte iniziale del codice vengono in primo luogo caricate tutte le risorse esterne sfruttando le funzioni del file utils.js; successivamente vengono inizializzate tutte le altre risorse che serviranno per il rendering, come
+	i programmi degli shader, la creazione degli oggetti mesh e delle texture, la gestione delle uniform, la composizione della interfaccia utente o la preparazione degli eventi per le canvas. A questo punto è stato implementato
+	il ciclo di rendering dove per ogni passaggio vengono aggiornate le informazioni e fatto il rendering della scena. Ad ogni ciclo viene quindi renderizzata la scena con le possibili nuove modifiche; inoltre in base alla scelta dell'utente 
+	nel pannello di controllo viene deciso se vi è il bisogno di calcolare e di conseguenza renderizzare anche le ombre oppure se questi passaggi possano essere saltati. 
+	<br>
+	<br>
+	<br>
+	<!--************************************************************************************************* -->
+	<!--***************************************Particolarità************************************************* -->
+	<!--************************************************************************************************* -->
+	<hr><h2> <u><b><a name="Particolarità"></a>Particolarità</b></u></h2>
+	<br>
+	<h3> <u><b><a name="Ombre"></a>Ombre</b></u></h3><br>
+	Come tecnica di resa avanzata ho deciso di realizzare l'effetto ombre all'interno della scena. Grazie a questo metodo il realismo della stanza ottiene un forte miglioramento.
+	<br>Per la concretizzazione dell'effetto ombre ho seguito un altro tutorial online rendendolo peculiare per la mia applicazione. L'idea alla base del mio approccio è quella di voler salvare una visione completa a 360° di tutta la scena, 
+	ma non dal punto di vista della camera o del nostro osservatore ma dal punto di vista della luce, e mantenere queste informazioni in una texture. Questo poichè le ombre sono legate alle distanze dei vari punti dalla fonte di luce, ma noi potremmo essere in una qualsiasi posizione
+	della stanza dalla quale può essere visibile quella area che sto analizzando anche se risulta in ombra rispetto alla luce. Nella mappa delle ombre che voglio realizzare per ogni direzione si vuole sapere quale è la profondità dell'oggetto più vicino alla luce,
+	in modo da poter successivamente anche avere le informazioni su quali altri punti invece risultano essere in ombra rispetto a quella direzione della luce.
+	<br>In primo luogo ho dovuto duplicare gli shader, sia quelli che gestivano le texture che quelli che gestivano solo un colore unico per le mesh. Per entrambi il vertex shader è rimasto invariato, mentre nel fragment shader è stato implementato un samplerCube e un shadowClipNearFar.
+	Il shadowClipNearFar viene utilizzato per normalizzare la distanza del punto in considerazione; mentre grazie al samplerCube otteniamo il valore della mappa delle ombre nella posizione considerata, in questo modo è possibile confrontare il valore con la distanza calcolata.
+	Se il valore della mappa delle ombre è maggiore significa che il nostro punto è raggiunto direttamente dalla luce, mentre al contrario risulta essere in ombra e quindi l'intensità della luce è molto minore.
+	Per il confronto dei valori è implementata una piccola bias, che anche in questo caso è costante ed è stata scelta manualmente, che serve per correggere dei piccoli errori nei valori della mappa.
+	Questi errori sono dovuti alle azioni di campionatura e alla precisione con la virgola e se non corretti portano effetti spiacevoli e non voluti sulle ombre della scena.
+	<br>Questi dati che vengono utilizzati negli shader però devono essere creati e gestiti dal codice javascript. Il caso del shadowClipNearFar è molto banale, si può immaginare come un intervallo dell'area di rendering, ed è composto dal
+	limite vicino, scelto come 0.05, e dal limite lontanto, scelto come 15.0.
+	<br>Di una maggiore complessità invece è la creazione del samplerCube. Per fare ciò è stato implementato uno shadowMapCube come una texture "gl.TEXTURE_CUBE_MAP"; inoltre sono stati utilizzati un Frame Buffer, un Render Buffer e una
+	serie di camere che rappresentano le 6 direzioni del cubo (positiveX,negativeX,positiveY,negativeY,positiveZ,negativeZ). Il Frame Buffer viene utilizzato poichè si vuole renderizzare la visione della scena per ognuna delle direzioni 
+	sulla texture_cube_map creata e non sul solito contesto; il Render Buffer invece è un buffer utilizzato per il rendering che nel nostro caso viene impiegato per mantenere le informazioni sulle profondità dei vari oggetti.
+	<br>Tutto questo viene sfruttato all'interno della funzione generateShadowMap(), chiamata all'interno del ciclo di rendering, dove vengono utilizzati i due shader per la generazione delle ombre che si occupano del calcolo delle profondità dei punti considerati.
+	All'interno di questa funzione vengono impostati i vari buffer e le uniform ed effettuato un ciclo; il ciclo viene ripetuto per ogni camera, quindi per ogni faccia del cubo, dove
+	assegno al frameBuffer la giusta faccia del mio cubo shadowMapCube e assegno il corrispondente render Buffer. Questo mi permette successivamente di effettuare la fase di disegno delle mesh: prima vengono assegnate le uniform e gli
+	attributi delle singole mesh e poi vengono disegnate nella faccia del mio cubo specificata dalla camera corrente. L'unica mesh che non viene disegnata è la Light Bulb Mesh poichè nella mia idea essa rappresenta la fonte di
+	luce, quindi di conseguenza non avrebbe senso calcolarne l'ombra.
+	<br>In questo modo è come se per ogni faccia del cubo io stia disegnando le varie mesh e salvando i valori della mappa delle ombre che mi serviranno.
+	Infine l'ultimo passaggio è il legare la uniform "samplerCube" degli shader per il disegno della scena con la shadowMapCube da me creata e sarà webGL che si occuperà di gestire il tutto in modo opportuno. 
+	<br>Infine è possibile utilizzare il browser per impostare la qualità delle texture delle ombre. Infatti è presente una variabile "textureSize" che definisce la grandezza delle texture per questo caso specifico; se il suo
+	valore risulta essere basso le texture vengono rappresentate in maniera approssimata e molto a blocchi, invece con un valore più alto le ombre sono molto più definite e liscie. Come sempre però una valore elevato comporta un calcolo molto dispendioso,
+	per questo il valore di default è 1024 che garantisce ombre abbastanza dettagliate senza richiedere sforzi elevati di computazione. Come detto questo valore può essere modificato utilizzando un parametro "texSize" nella chiamata
+	alla pagina che permette di impostare il valore, che in ogni caso però deve essere una potenza di due. Ad esempio "http://localhost:8000/?texSize=4096".
+	<br>
+	<br>
+	<table border="0" align="center" cellspacing="1" cellpadding="1">
+		<tr>
+			<td><img src="images/ombre32.jpg" width=520 height=400 align="center"></td>
+			<td><img src="images/ombre4096.jpg" width=520 height=400 align="center"></td>
+		</tr>
+	</table><br>
+	<h3> <u><b><a name="Dinosauro"></a>Dinosauro e interazioni</b></u></h3><br>
+	La mesh del dinosauro risulta essere gestita in maniera diversa dalle altre. In primo luogo risulta essere una mesh molto pesante, poichè molto dettagliata; come detto in precedenza è stata scaricata dal sito https://www.cgtrader.com/
+	e successivamente modificata con Blender per fare in modo che fosse formata da un singolo oggetto permettendone la lettura tramite il mio loader Obj. In particolare questo ha significato piccole modifiche di posizione di alcune parti
+	e la fusione di altre che nella mesh originale erano separate, il tutto sempre tramite l'uso di Blender.
+	<br>In aggiunta il dinosauro risulta essere non visibile alla comparsa iniziale della scena; potrà diventare visibile solo successivamente alla interazione dell'utente tramite
+	la checkbox relativa all'interno dell'interfaccia. Se azionata il dinosauro diventerà visibile e sarà eseguito anche un audio rappresentante il suo ruggito. In contemporanea alla visualizzazione inizierà anche la sua animazione
+	descritta in precedenza. In ogni momento tramite l'interfaccia l'utente si potrà decidere di nascondere o visualizzare il dinosauro, che non verrà in nessun modo modificato quando non visibile. Per rendere il tutto più efficiente quando
+	non presente nella scena il dinosauro non verrà gestito nè per quanto riguarda le ombre nè per i disegni, in modo da diminuire l'impatto sulle computazioni.
+	<br>Anche la Monkey Mesh è il soggetto di una interazione. In questo caso se l'utente si avvicina abbastanza alla mesh della scimmia gli comparirà a schermo una didascalia per effettuare una interazione. Eseguendo
+	l'azione descritta anche in questo caso verrà eseguito un audio rapprensentante il verso di una scimmia. Questa didascalia è di nuovo gestita tramite una diversa canvas, "textCanvas" con un contesto 2D. Questa canvas contiene il
+	testo rappresentante la descrizione e gestisce tutti gli eventi come la canvas principale per permettere tutte le interazioni anche nella sua area di competenza. Per la visualizzazione del testo sulla canvas anche in questo caso
+	sono stati utilizzati degli intervalli sulla proprietà "position" della camera, per fare in modo che comparisse solamente entro un certo volume intorno alla mesh. Ovviamente se la pressione dei tasti per l'interazione avviene quando
+	non si è nell'area designata, cioè non è presenta la scritta, questa azione non produce alcun effetto.
+	<br>Tramite l'interfaccia utente è anche possibile modificare la velocità di rotazione della Monkey Mesh. Il tutto è gestito tramite uno "slider" che permette di selezionare un parametro che moltiplica l'angolo di rotazione
+	passato alla funzione di trasformazione e che quindi velocizza o rallenta la durata di una rotazione completa di 360°. L'intervallo di scelta del parametro è fra 0 e 10; se il parametro è nullo viene annullato l'angolo di rotazione quindi la mesh risulta ferma, mentre
+	maggiore è il valore del parametro più veloce è la rotazione. Il limite massimo è stato impostato a 10 poichè risulta in una rotazione molto veloce ma ancora visibile e non fastidiosa; con valori più elevati del parametro gli effetti risultavano sgradevoli.
+	<br>
+	<table border="0" align="center" cellspacing="1" cellpadding="1">
+		<tr>
+			<td><img src="images/rex.jpg" width=390 height=300 align="center"></td>
+			<td><img src="images/monkeyInteract.jpg" width=390 height=300 align="center"></td>
+		</tr>
+	</table><br>
+	<h3> <u><b><a name="Caricamento"></a>Caricamento</b></u></h3><br>
+	Un problema che è sorto durante la creazione di questo progetto è stato la lunga durata del caricamento iniziale. Le risorse iniziali da dover reperire infatti risultano essere molte e soprattutto i file OBJ delle mesh in alcuni
+	casi risultano essere molto pesanti; per questo motivo non è possibile ottenere una ricostruzione completa della scena prima di 3/4 secondi, che risulta essere un tempo molto elevato. Per cercare di superare il problema, senza l'impiego di
+	librerie per caricamento asincrono o altre più sofisticate, ho deciso di realizzare una semplice schermata di caricamento per dare una sensazione di elaborazione all'utente e presentare la scena solamente quando pronta. 
+	Questa schermata di caricamento è stata realizzata utilizzando la potenza di HTML5 e CSS; è stato implementato un tag "div", con classe "loader", che incorpora una gif di caricamento. Successivamente è stato posizionato nella maniera corretta utilizzando
+	CSS per fare in modo che comprisse l'intera pagina e fosse centrato, ed è stato impostato anche un effetto di scomparsa. Questo effetto viene applicato ad un oggetto di classe "loader" e "hidden", in questo modo tramite javacript quando le risorse sono completamente caricate viene aggiunta
+	la classe "hidden" al tag originale facendo partire quindi l'animazione di scomparsa, che ha una durata di un secondo. Al completamento della dissolvenza il tag "div" viene poi mantenuto invisibile e si può vedere la scena originale correttamente. 
+	<br><img src="images/loading.gif" width="200" height="150" align="center"><br>
+	<h3> <u><b><a name="Resize"></a>Resize pagina</b></u></h3><br>
+	Una ulteriore accortezza che ho implementato è la amministrazione della scena rispetto alle modifiche della schermata del browser web. Tramite eventi quando viene modificata la window viene richiamata la mia funzione onResizeWindow() che si occupa
+	di modificare di conseguenza le varie componenti della finestra. All'interno della funzione viene calcolata la giusta dimensione della canvas per mantenerla in 16:9, di modo che la canvas possa cambiare di dimensione ma le proporzioni
+	rimangano sempre le medesime eliminando possibili distorsioni dell'immagine. Oltre alla gestione della canvas principale viene modificata anche la posizione dell'interfaccia utente e della canvas contenente le immagini per il
+	movimento da dispositivo mobile, mantenendo il tutto nelle giuste posizioni fin quando possibile.
+	<br>Risulta essere presente un problema con questa funzionalità quando le dimensioni della pagina diventano troppo ristrette. Questo poichè le dimensioni delle immagini e del menù risultano essere fissate e di
+	conseguenza quando la canvas diventa troppo piccola queste tendono a ricoprire gran parte della schermata nascondendo la scena. Nonostante questo problema ho deciso di mantenere attiva la funzionalità poichè mi è sembrata
+	in ogni caso molto utile e creasse un buon effetto visivo, inoltre mi aiuta nel posizionamento dei vari elementi a schermo.
+	<br>
+	<br>
+</body>
+</html>
