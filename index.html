@@ -1,0 +1,94 @@
+<html>
+	<head>
+		<title> Alan Dalmonte - Computer Graphics WEBGL project </title>
+		<style>
+		#mycanvas {
+			margin: 0;
+			padding: 0;
+			position: absolute;
+		}
+		#ui {
+			position: absolute;
+			width: 350px;
+			border: 3px solid blue;
+			padding: 10px;
+			background-color: lightgrey;
+			color: black;
+			box-shadow: 4px 4px 5px black;
+		}
+        #text {. /*to manage text on canvas and webgl */
+          background-color: transparent;  /* needed because we setcanvas bg color to white */
+          position: absolute;
+          left: 33%;
+          top: 50%;
+          z-index: 10;
+        }
+		#keyboard {. /*to manage text on canvas and webgl */
+          background-color: transparent;  /* needed because we setcanvas bg color to white */
+          position: absolute;
+          z-index: 9;
+        }
+		.loader {
+			position: fixed;
+			z-index: 99;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: white;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		
+		.loader.hidden {
+			animation: fadeOut 1s;
+			animation-fill-mode: forwards;
+		}
+		
+		@keyframes fadeOut {
+			100% {
+				opacity: 0;
+				visibility: hidden;
+			}
+		}
+		</style>
+	</head>
+	<body onload="initDemo();">
+		<div class="loader" >
+			<input type="image" src="images/loading.gif" width="500">
+		</div>
+		<canvas width="610" height="200" id="text">
+			Your browser does not support canvas
+		</canvas>
+		<canvas width="450" height="300" id="keyboard">
+			Your browser does not support canvas
+		</canvas>
+		<canvas id="mycanvas">
+			Your browser does not support canvas
+		</canvas>
+		<div id="ui">
+			<label> Move around with:</label>
+			<input type="image" src="images/wasd.png" width="80" height="40">
+			<label> or:</label>
+			<input type="image" src="images/ruota_mov.png" width="80" height="40">
+			<br>
+			<label> Move up and down with:</label>
+			<input type="image" src="images/su_giu.png" width="80" height="40">
+			<label> or:</label>
+			<input type="image" src="images/up_down_mov.png" width="60" height="40">
+			<br>
+			<label> Rotate camera right and left with:</label>
+			<input type="image" src="images/destra_sinistra.png" width="60" height="40">
+			<br>
+			<label> You can also rotate with drag and drop:</label>
+			<input type="image" src="images/mouse.png" width="30" height="40">
+		</div>
+		<script src="utils.js"></script>
+		<script src="objLoader.js"></script>
+		<script src="stanza.js"></script>
+		<script src="m4.js"></script>
+		<script src="Models.js"></script>
+		<script src="webgl-lessons-ui.js"></script>
+	</body>
+</html>
